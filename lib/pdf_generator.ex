@@ -138,6 +138,7 @@ defmodule PdfGenerator do
     with {html_file, pdf_file}       <- make_file_paths(options),
          :ok                         <- maybe_write_html(content, html_file),
          {executable, arguments}     <- make_command(generator, options, content, {html_file, pdf_file}),
+         arguments                   <- Enum.map(arguments, &to_string/1),
          {:cmd, {stderr, exit_code}} <- {:cmd, System.cmd(executable, arguments, stderr_to_stdout: true)},       # unfortuantely wkhtmltopdf returns 0 on errors as well :-/
          {:result_ok, true, _err}    <- {:result_ok, result_ok(generator, stderr, exit_code), stderr},           # so we inspect stderr instead
          {:rm, :ok}                  <- {:rm, maybe_delete_temp(delete_temp, html_file)},
